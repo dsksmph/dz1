@@ -12,6 +12,7 @@ public class Game : MonoBehaviour
     public Camera Cam;
     public float PlayerTrackingMinX = -3.0f;
     public float PlayerTrackingMaxX;
+    public float timeLeft = 30.0f;
     
     public Transform Goal;
 
@@ -19,6 +20,7 @@ public class Game : MonoBehaviour
     public GameObject TextWon;
     public GameObject TextLost;
     public GameObject TextPaused;
+    public Text TextTimer;
     public Text TextHealth;
 
     bool isPaused;
@@ -31,6 +33,7 @@ public class Game : MonoBehaviour
         AssignPlayer();
         AssignCamera();
         PlayerTrackingMaxX = Goal.transform.position.x - 3.0f;
+        StartCoroutine(StartCountDown(timeLeft));
     }
 
     void AssignPlayer()
@@ -135,5 +138,22 @@ public class Game : MonoBehaviour
         PauseGame(false);
         var level = SceneManager.GetActiveScene().name;
         SceneManager.LoadScene(level);
+    }
+
+    IEnumerator StartCountDown(float timeLeft)
+    {
+        float currCountDownValue = timeLeft;
+        while (currCountDownValue > 0)
+        {
+            float minutes = Mathf.FloorToInt(currCountDownValue / 60);
+            float seconds = Mathf.FloorToInt(currCountDownValue % 60);
+            TextTimer.text = string.Format("Timer : {0:00} : {1:00} sec", minutes, seconds);
+            yield return new WaitForSeconds(1.0f);
+            currCountDownValue--;
+            if (currCountDownValue <= 0)
+            {
+                Lose();
+            }
+        }
     }
 }
